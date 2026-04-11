@@ -35,14 +35,27 @@ export default function App() {
       // @ts-ignore
       const API_BASE = import.meta.env?.VITE_API_URL || '';
       fetch(`${API_BASE}/api/v1/projects`)
-        .then(res => res.json())
+        .then(res => {
+          if (!res.ok) throw new Error('Network response was not ok');
+          return res.json();
+        })
         .then(data => {
-          setProjects(data);
-          if (data.length > 0) {
-            setCurrentProject(data[0]);
+          // 确保 data 是数组，防止后端报错返回对象导致前端崩溃白屏
+          if (Array.isArray(data)) {
+            setProjects(data);
+            if (data.length > 0) {
+              setCurrentProject(data[0]);
+            }
+          } else {
+            console.error('Expected array from API, got:', data);
+            setProjects([]);
           }
         })
-        .catch(err => console.error('Failed to fetch projects:', err));
+        .catch(err => {
+          console.error('Failed to fetch projects:', err);
+          setProjects([]);
+          showToast('无法连接到后端服务，请检查 API 地址配置', 'error');
+        });
     }
   }, [isLoggedIn]);
 

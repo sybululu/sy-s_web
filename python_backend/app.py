@@ -119,6 +119,14 @@ def mock_roberta_predict(sentence: str) -> Dict[str, float]:
 # API 路由实现
 # ==========================================
 
+@app.get("/api/v1/projects", summary="获取历史项目列表")
+async def get_projects():
+    """
+    获取历史审查记录。当前为无状态后端，暂时返回空列表。
+    如果需要持久化，可以在此处连接 PostgreSQL/MongoDB 等数据库。
+    """
+    return []
+
 @app.post("/api/v1/analyze", response_model=AnalyzeResponse, summary="风险审查接口")
 async def analyze_policy(request: AnalyzeRequest):
     """

@@ -52,6 +52,18 @@ async function startServer() {
 
   app.use(express.json());
 
+  // 配置跨域 (CORS)，允许 Netlify 等外部前端调用此后端
+  app.use((req, res, next) => {
+    res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+    if (req.method === 'OPTIONS') {
+      res.sendStatus(200);
+    } else {
+      next();
+    }
+  });
+
   // 处理 AI Studio 平台的内部日志拉取请求，防止控制台一直报 404
   app.get('/', (req, res, next) => {
     if (req.query.logs === 'container') {
