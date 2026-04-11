@@ -33,7 +33,22 @@ export default function App() {
   useEffect(() => {
     if (isLoggedIn) {
       // @ts-ignore
-      const API_BASE = import.meta.env?.VITE_API_URL || '';
+      let API_BASE = import.meta.env?.VITE_API_URL || '';
+      
+      // 自动修正 Hugging Face 网页地址为直连 API 地址
+      if (API_BASE.includes('huggingface.co/spaces/')) {
+        const parts = API_BASE.split('huggingface.co/spaces/');
+        if (parts.length > 1) {
+          const path = parts[1].split('/');
+          if (path.length >= 2) {
+            const username = path[0];
+            const spacename = path[1];
+            API_BASE = `https://${username}-${spacename}.hf.space`;
+            console.log('Auto-corrected HF URL to:', API_BASE);
+          }
+        }
+      }
+
       fetch(`${API_BASE}/api/v1/projects`)
         .then(res => {
           if (!res.ok) throw new Error('Network response was not ok');
@@ -121,7 +136,21 @@ export default function App() {
     
     try {
       // @ts-ignore
-      const API_BASE = import.meta.env?.VITE_API_URL || '';
+      let API_BASE = import.meta.env?.VITE_API_URL || '';
+      
+      // 自动修正 Hugging Face 网页地址为直连 API 地址
+      if (API_BASE.includes('huggingface.co/spaces/')) {
+        const parts = API_BASE.split('huggingface.co/spaces/');
+        if (parts.length > 1) {
+          const path = parts[1].split('/');
+          if (path.length >= 2) {
+            const username = path[0];
+            const spacename = path[1];
+            API_BASE = `https://${username}-${spacename}.hf.space`;
+          }
+        }
+      }
+
       const response = await fetch(`${API_BASE}/api/v1/analyze`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
