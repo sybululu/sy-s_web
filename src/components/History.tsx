@@ -49,7 +49,7 @@ export default function History({ projects, onSelectProject }: HistoryProps) {
         </div>
       </div>
 
-      <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex flex-wrap gap-4 items-center justify-between shrink-0">
+      <div className="glass-card p-4 rounded-xl flex flex-wrap gap-4 items-center justify-between shrink-0">
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-2">
             <Filter className="w-4 h-4 text-ink-muted" />
@@ -57,7 +57,7 @@ export default function History({ projects, onSelectProject }: HistoryProps) {
             <select 
               value={riskFilter}
               onChange={(e) => handleFilterChange(setRiskFilter, e.target.value)}
-              className="text-sm bg-surface-alt border border-slate-200 rounded-md px-3 py-1.5 outline-none focus:border-ink cursor-pointer"
+              className="text-sm glass-input rounded-md px-3 py-1.5 outline-none focus:border-ink cursor-pointer"
             >
               <option value="all">全部风险</option>
               <option value="极高风险">极高风险</option>
@@ -72,7 +72,7 @@ export default function History({ projects, onSelectProject }: HistoryProps) {
             <select 
               value={timeFilter}
               onChange={(e) => handleFilterChange(setTimeFilter, e.target.value)}
-              className="text-sm bg-surface-alt border border-slate-200 rounded-md px-3 py-1.5 outline-none focus:border-ink cursor-pointer"
+              className="text-sm glass-input rounded-md px-3 py-1.5 outline-none focus:border-ink cursor-pointer"
             >
               <option value="all">全部时间</option>
               <option value="7days">近 7 天</option>
@@ -87,11 +87,11 @@ export default function History({ projects, onSelectProject }: HistoryProps) {
         </div>
       </div>
 
-      <div className="bg-white rounded-xl shadow-sm border border-slate-200 flex-1 flex flex-col min-h-0">
+      <div className="glass-card rounded-xl flex-1 flex flex-col min-h-0">
         <div className="overflow-x-auto flex-1">
           <table className="w-full text-left border-collapse">
             <thead>
-              <tr className="bg-surface-alt border-b border-slate-200">
+              <tr className="bg-white/40 border-b border-white/30">
                 <th className="px-6 py-4 text-xs font-medium text-ink-muted uppercase tracking-wider w-32">日期</th>
                 <th className="px-6 py-4 text-xs font-medium text-ink-muted uppercase tracking-wider">项目名称</th>
                 <th className="px-6 py-4 text-xs font-medium text-ink-muted uppercase tracking-wider w-32">健康度</th>
@@ -99,7 +99,7 @@ export default function History({ projects, onSelectProject }: HistoryProps) {
                 <th className="px-6 py-4 text-xs font-medium text-ink-muted uppercase tracking-wider w-24 text-right">操作</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100">
+            <tbody className="divide-y divide-white/20">
               {currentData.length > 0 ? (
                 currentData.map((project) => {
                   const isHighRisk = project.riskStatus === '极高风险';
@@ -109,7 +109,7 @@ export default function History({ projects, onSelectProject }: HistoryProps) {
                     <tr 
                       key={project.id} 
                       onClick={() => onSelectProject(project)}
-                      className="hover:bg-slate-50/50 transition-colors cursor-pointer group"
+                      className="hover:bg-white/50 transition-colors cursor-pointer group"
                     >
                       <td className="px-6 py-4 text-sm font-mono text-ink-muted">{project.date}</td>
                       <td className="px-6 py-4">
@@ -157,7 +157,7 @@ export default function History({ projects, onSelectProject }: HistoryProps) {
         </div>
         
         {/* Pagination Controls */}
-        <div className="px-6 py-4 border-t border-slate-200 flex items-center justify-between bg-surface-alt mt-auto shrink-0">
+        <div className="px-6 py-4 border-t border-white/30 flex items-center justify-between bg-white/40 mt-auto shrink-0">
           <div className="text-sm text-ink-muted">
             显示第 <span className="font-medium text-ink">{filteredProjects.length === 0 ? 0 : (currentPage - 1) * ITEMS_PER_PAGE + 1}</span> 到 <span className="font-medium text-ink">{Math.min(currentPage * ITEMS_PER_PAGE, filteredProjects.length)}</span> 条，共 <span className="font-medium text-ink">{filteredProjects.length}</span> 条
           </div>
@@ -165,7 +165,7 @@ export default function History({ projects, onSelectProject }: HistoryProps) {
             <button 
               onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
               disabled={currentPage === 1}
-              className="p-1.5 rounded-md border border-slate-200 bg-white text-ink-muted hover:text-ink disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              className="p-1.5 rounded-md border border-white/60 bg-white/60 text-ink-muted hover:text-ink disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
               <ChevronLeft className="w-4 h-4" />
             </button>
@@ -175,7 +175,7 @@ export default function History({ projects, onSelectProject }: HistoryProps) {
             <button 
               onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
               disabled={currentPage === totalPages}
-              className="p-1.5 rounded-md border border-slate-200 bg-white text-ink-muted hover:text-ink disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              className="p-1.5 rounded-md border border-white/60 bg-white/60 text-ink-muted hover:text-ink disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
               <ChevronRight className="w-4 h-4" />
             </button>

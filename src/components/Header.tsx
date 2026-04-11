@@ -9,7 +9,7 @@ interface HeaderProps {
 
 export default function Header({ title, searchQuery, onSearchChange, onShowToast }: HeaderProps) {
   return (
-    <header className="flex justify-between items-center h-14 px-8 sticky top-0 z-50 w-full bg-surface border-b border-slate-200">
+    <header className="flex justify-between items-center h-14 px-8 sticky top-0 z-50 w-full glass-panel border-b border-white/50">
       <div className="flex items-center gap-4">
         <span className="font-serif text-xl text-ink tracking-tight">{title}</span>
       </div>
@@ -17,7 +17,7 @@ export default function Header({ title, searchQuery, onSearchChange, onShowToast
         <div className="relative group">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-ink-muted w-4 h-4" />
           <input
-            className="bg-surface-alt border border-transparent rounded-md py-1.5 pl-9 pr-4 text-sm w-64 focus:bg-white focus:border-slate-300 focus:ring-0 transition-all placeholder:text-ink-muted text-ink"
+            className="glass-input rounded-md py-1.5 pl-9 pr-4 text-sm w-64 focus:ring-0 transition-all placeholder:text-ink-muted text-ink"
             placeholder="搜索审查记录或条款 ID..."
             type="text"
             value={searchQuery}

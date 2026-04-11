@@ -203,6 +203,7 @@ export default function App() {
         <Register 
           onRegister={() => { showToast('注册成功！'); setIsRegistering(false); }} 
           onSwitchToLogin={() => setIsRegistering(false)} 
+          onShowToast={showToast}
         />
       );
     }
@@ -243,7 +244,7 @@ export default function App() {
         onLogout={handleLogout} 
       />
       
-      <main className="flex-1 flex flex-col overflow-hidden bg-white">
+      <main className="flex-1 flex flex-col overflow-hidden bg-transparent">
         <Header 
           title={viewTitles[currentView]} 
           searchQuery={searchQuery}

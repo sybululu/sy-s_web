@@ -1,5 +1,7 @@
 import { ShieldCheck } from 'lucide-react';
 import { useState, FormEvent } from 'react';
+import { PRIVACY_POLICY_TEXT } from '../constants';
+import PolicyModal from './PolicyModal';
 
 interface LoginProps {
   onLogin: () => void;
@@ -9,6 +11,8 @@ interface LoginProps {
 
 export default function Login({ onLogin, onSwitchToRegister, onShowToast }: LoginProps) {
   const [agreed, setAgreed] = useState(false);
+  const [showPolicy, setShowPolicy] = useState(false);
+  const [policyTitle, setPolicyTitle] = useState('');
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
@@ -19,9 +23,14 @@ export default function Login({ onLogin, onSwitchToRegister, onShowToast }: Logi
     onLogin();
   };
 
+  const openPolicy = (title: string) => {
+    setPolicyTitle(title);
+    setShowPolicy(true);
+  };
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-surface px-4">
-      <div className="w-full max-w-[400px] bg-white p-8 rounded-2xl shadow-sm border border-slate-200">
+    <div className="min-h-screen flex items-center justify-center px-4 relative">
+      <div className="w-full max-w-[400px] glass-card p-8 rounded-2xl">
         <div className="mb-8 flex flex-col items-center text-center">
           <div className="w-10 h-10 bg-ink rounded-xl flex items-center justify-center text-white mb-4 shadow-sm">
             <ShieldCheck className="w-6 h-6" />
@@ -33,7 +42,7 @@ export default function Login({ onLogin, onSwitchToRegister, onShowToast }: Logi
           <div>
             <label className="block text-sm font-medium text-ink mb-1.5">企业账号</label>
             <input
-              className="w-full bg-white border border-slate-200 rounded-lg py-2 px-3 focus:border-ink focus:ring-1 focus:ring-ink outline-none transition-all text-sm"
+              className="w-full glass-input rounded-lg py-2 px-3 focus:border-ink focus:ring-1 focus:ring-ink outline-none transition-all text-sm"
               placeholder="admin@example.com"
               type="text"
               defaultValue="admin@example.com"
@@ -42,7 +51,7 @@ export default function Login({ onLogin, onSwitchToRegister, onShowToast }: Logi
           <div>
             <label className="block text-sm font-medium text-ink mb-1.5">密码</label>
             <input
-              className="w-full bg-white border border-slate-200 rounded-lg py-2 px-3 focus:border-ink focus:ring-1 focus:ring-ink outline-none transition-all text-sm"
+              className="w-full glass-input rounded-lg py-2 px-3 focus:border-ink focus:ring-1 focus:ring-ink outline-none transition-all text-sm"
               placeholder="••••••••"
               type="password"
               defaultValue="password"
@@ -57,7 +66,7 @@ export default function Login({ onLogin, onSwitchToRegister, onShowToast }: Logi
               onChange={(e) => setAgreed(e.target.checked)}
             />
             <label className="text-xs text-ink-muted leading-relaxed" htmlFor="privacy-check">
-              我已阅读并同意 <span className="text-ink cursor-pointer hover:underline" onClick={(e) => { e.preventDefault(); onShowToast?.('《用户服务协议》内容待接入...'); }}>《用户服务协议》</span> 与 <span className="text-ink cursor-pointer hover:underline" onClick={(e) => { e.preventDefault(); onShowToast?.('《隐私声明》内容待接入...'); }}>《隐私声明》</span>
+              我已阅读并同意 <span className="text-ink cursor-pointer hover:underline" onClick={(e) => { e.preventDefault(); openPolicy('用户服务协议'); }}>《用户服务协议》</span> 与 <span className="text-ink cursor-pointer hover:underline" onClick={(e) => { e.preventDefault(); openPolicy('隐私声明'); }}>《隐私声明》</span>
             </label>
           </div>
           <button 
@@ -71,6 +80,17 @@ export default function Login({ onLogin, onSwitchToRegister, onShowToast }: Logi
           </p>
         </form>
       </div>
+
+      <PolicyModal
+        isOpen={showPolicy}
+        title={policyTitle}
+        content={PRIVACY_POLICY_TEXT}
+        onClose={() => setShowPolicy(false)}
+        onAccept={() => {
+          setShowPolicy(false);
+          setAgreed(true);
+        }}
+      />
     </div>
   );
 }

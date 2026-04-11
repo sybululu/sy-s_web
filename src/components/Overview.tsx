@@ -78,7 +78,7 @@ export default function Overview({ currentProject, projects, onViewChange }: Ove
 
       {/* Top Row: Main Score & Risk Distribution */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2 bg-white p-8 rounded-xl border border-slate-200 shadow-sm flex items-center gap-10">
+        <div className="lg:col-span-2 glass-card p-8 rounded-xl flex items-center gap-10">
           <div className="relative shrink-0">
             <svg className="w-32 h-32 transform -rotate-90">
               <circle className="text-slate-100" cx="64" cy="64" fill="transparent" r="56" stroke="currentColor" strokeWidth="8"></circle>
@@ -127,7 +127,7 @@ export default function Overview({ currentProject, projects, onViewChange }: Ove
           </div>
         </div>
 
-        <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-between">
+        <div className="glass-card p-6 rounded-xl flex flex-col justify-between">
           <div>
             <div className="text-xs font-medium uppercase tracking-widest text-ink-muted mb-5 flex items-center gap-2">
               <Activity className="w-4 h-4" />
@@ -181,7 +181,7 @@ export default function Overview({ currentProject, projects, onViewChange }: Ove
           { label: '历史审查总数', value: totalAudits, unit: '次', trend: '', trendColor: '' },
           { label: '当前高危风险', value: highCount, unit: '项', trend: highCount > 0 ? 'up' : '', trendColor: highCount > 0 ? 'text-[#d97757]' : '' },
         ].map((stat, i) => (
-          <div key={i} className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+          <div key={i} className="glass-card p-6 rounded-xl">
             <div className="text-xs font-medium text-ink-muted mb-2 uppercase tracking-widest">{stat.label}</div>
             <div className="flex items-baseline gap-1.5">
               <span className="text-3xl font-serif text-ink tracking-tight">{stat.value}</span>
@@ -194,8 +194,8 @@ export default function Overview({ currentProject, projects, onViewChange }: Ove
 
       {/* Bottom Row: Trend Chart & Top Categories */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2 bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden flex flex-col">
-          <div className="px-6 py-5 border-b border-slate-200 bg-surface-alt">
+        <div className="lg:col-span-2 glass-card rounded-xl overflow-hidden flex flex-col">
+          <div className="px-6 py-5 border-b border-white/30 bg-white/40">
             <h3 className="text-sm font-medium text-ink flex items-center gap-2 uppercase tracking-widest">
               <TrendingUp className="w-4 h-4 text-ink-muted" /> 合规得分趋势 (近 10 次)
             </h3>
@@ -222,8 +222,8 @@ export default function Overview({ currentProject, projects, onViewChange }: Ove
           </div>
         </div>
 
-        <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden flex flex-col">
-          <div className="px-6 py-5 border-b border-slate-200 bg-surface-alt">
+        <div className="glass-card rounded-xl overflow-hidden flex flex-col">
+          <div className="px-6 py-5 border-b border-white/30 bg-white/40">
             <h3 className="text-sm font-medium text-ink flex items-center gap-2 uppercase tracking-widest">
               <BarChart3 className="w-4 h-4 text-ink-muted" /> 频发违规类型 (当前)
             </h3>

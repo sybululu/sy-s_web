@@ -59,11 +59,11 @@ export default function Details({ currentProject, onOpenDrawer, onDownload }: De
         </div>
       </div>
 
-      <div className="bg-white rounded-xl shadow-sm border border-slate-200 flex-1 flex flex-col min-h-0">
+      <div className="glass-card rounded-xl flex-1 flex flex-col min-h-0">
         <div className="overflow-x-auto flex-1">
           <table className="w-full text-left border-collapse">
             <thead>
-              <tr className="bg-surface-alt border-b border-slate-200">
+              <tr className="bg-white/40 border-b border-white/30">
                 <th className="px-4 py-3 text-xs font-medium text-ink-muted w-24">条款 ID</th>
                 <th className="px-4 py-3 text-xs font-medium text-ink-muted w-32">位置</th>
                 <th className="px-4 py-3 text-xs font-medium text-ink-muted w-40">风险类别</th>
@@ -72,10 +72,10 @@ export default function Details({ currentProject, onOpenDrawer, onDownload }: De
                 <th className="px-4 py-3 text-xs font-medium text-ink-muted w-24 text-right">操作</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100">
+            <tbody className="divide-y divide-white/20">
               {currentData.length > 0 ? (
                 currentData.map((clause) => (
-                  <tr key={clause.id} className="hover:bg-slate-50/50 transition-colors group">
+                  <tr key={clause.id} className="hover:bg-white/50 transition-colors group">
                     <td className="px-4 py-3 text-xs font-mono text-ink-muted">{clause.id}</td>
                     <td className="px-4 py-3 text-xs text-ink-muted">{clause.location}</td>
                     <td className="px-4 py-3 text-sm text-ink font-medium">{clause.category}</td>
@@ -113,7 +113,7 @@ export default function Details({ currentProject, onOpenDrawer, onDownload }: De
         </div>
 
         {/* Pagination Controls */}
-        <div className="px-6 py-4 border-t border-slate-200 flex items-center justify-between bg-surface-alt mt-auto shrink-0">
+        <div className="px-6 py-4 border-t border-white/30 flex items-center justify-between bg-white/40 mt-auto shrink-0">
           <div className="text-sm text-ink-muted">
             显示第 <span className="font-medium text-ink">{currentProject.clauses.length === 0 ? 0 : (currentPage - 1) * ITEMS_PER_PAGE + 1}</span> 到 <span className="font-medium text-ink">{Math.min(currentPage * ITEMS_PER_PAGE, currentProject.clauses.length)}</span> 条，共 <span className="font-medium text-ink">{currentProject.clauses.length}</span> 条
           </div>
@@ -121,7 +121,7 @@ export default function Details({ currentProject, onOpenDrawer, onDownload }: De
             <button 
               onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
               disabled={currentPage === 1}
-              className="p-1.5 rounded-md border border-slate-200 bg-white text-ink-muted hover:text-ink disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              className="p-1.5 rounded-md border border-white/60 bg-white/60 text-ink-muted hover:text-ink disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
               <ChevronLeft className="w-4 h-4" />
             </button>
@@ -131,7 +131,7 @@ export default function Details({ currentProject, onOpenDrawer, onDownload }: De
             <button 
               onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
               disabled={currentPage === totalPages}
-              className="p-1.5 rounded-md border border-slate-200 bg-white text-ink-muted hover:text-ink disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              className="p-1.5 rounded-md border border-white/60 bg-white/60 text-ink-muted hover:text-ink disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
               <ChevronRight className="w-4 h-4" />
             </button>

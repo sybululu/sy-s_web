@@ -4,31 +4,48 @@ from pydantic import BaseModel, Field
 from typing import List, Optional, Dict
 import re
 import random
+import os
+
+# ==========================================
+# 配置开关：是否使用真实模型
+# ==========================================
+# 当你把模型权重传到 Hugging Face 后，将此改为 True
+USE_REAL_MODEL = os.environ.get("USE_REAL_MODEL", "False").lower() == "true"
 
 # ---------------------------------------------------------
-# 伪代码/骨架：深度学习模型加载 (HuggingFace Transformers)
+# 真实深度学习模型加载 (HuggingFace Transformers)
 # ---------------------------------------------------------
-"""
-import torch
-from transformers import AutoTokenizer, AutoModelForSequenceClassification, MT5ForConditionalGeneration
-from sentence_transformers import SentenceTransformer
-from pymilvus import connections, Collection
+if USE_REAL_MODEL:
+    import torch
+    from transformers import AutoTokenizer, AutoModelForSequenceClassification, MT5ForConditionalGeneration
+    from sentence_transformers import SentenceTransformer
+    import faiss # 推荐在 HF Space 使用 FAISS 替代 Milvus，更轻量
+    import numpy as np
+    import json
 
-# 1. 加载 RoBERTa/PERT 风险分类模型
-# tokenizer_roberta = AutoTokenizer.from_pretrained("hfl/chinese-roberta-wwm-ext")
-# model_roberta = AutoModelForSequenceClassification.from_pretrained("./models/capp130-roberta", num_labels=12)
+    print("正在加载真实模型，这可能需要几分钟...")
+    
+    # 1. 加载 RoBERTa 风险分类模型 (替换为你自己的模型路径或 HF Repo)
+    # tokenizer_roberta = AutoTokenizer.from_pretrained("hfl/chinese-roberta-wwm-ext")
+    # model_roberta = AutoModelForSequenceClassification.from_pretrained("./models/roberta-compliance", num_labels=12)
+    # model_roberta.eval()
 
-# 2. 加载 mT5 整改生成模型
-# tokenizer_mt5 = AutoTokenizer.from_pretrained("google/mt5-base")
-# model_mt5 = MT5ForConditionalGeneration.from_pretrained("./models/rag-mt5-compliance")
+    # 2. 加载 mT5 整改生成模型
+    # tokenizer_mt5 = AutoTokenizer.from_pretrained("google/mt5-base")
+    # model_mt5 = MT5ForConditionalGeneration.from_pretrained("./models/mt5-compliance")
+    # model_mt5.eval()
 
-# 3. 加载 Sentence-BERT 向量化模型
-# model_sbert = SentenceTransformer('shibing624/text2vec-base-chinese')
+    # 3. 加载 Sentence-BERT 向量化模型 (用于 RAG 检索)
+    # model_sbert = SentenceTransformer('shibing624/text2vec-base-chinese')
 
-# 4. 连接 Milvus 向量数据库
-# connections.connect("default", host="localhost", port="19530")
-# collection_milvus = Collection("compliance_cases")
-"""
+    # 4. 加载法律知识库 (FAISS 向量库)
+    # 假设你已经提前把法律条文转成了向量并保存为 legal_index.index
+    # index_faiss = faiss.read_index("./data/legal_index.index")
+    # 假设你有一个 JSON 文件存了对应的法律文本：{ "0": "《个保法》第十条...", "1": "..." }
+    # with open("./data/legal_texts.json", "r", encoding="utf-8") as f:
+    #     legal_texts = json.load(f)
+    
+    print("模型加载完成！")
 
 app = FastAPI(
     title="隐私政策合规智能审查平台 API",
@@ -101,17 +118,20 @@ def split_into_sentences(text: str) -> List[str]:
 
 def mock_roberta_predict(sentence: str) -> Dict[str, float]:
     """
-    模拟 RoBERTa/PERT 模型的多标签二分类预测
-    真实场景下：
-    inputs = tokenizer_roberta(sentence, return_tensors="pt")
-    outputs = model_roberta(**inputs)
-    probs = torch.sigmoid(outputs.logits).squeeze().tolist()
-    return {INDICATOR_KEYS[i]: probs[i] for i in range(12)}
+    模拟或真实调用 RoBERTa/PERT 模型的多标签二分类预测
     """
-    # 构造假数据：随机让某些句子触发违规 (概率较低)
+    if USE_REAL_MODEL:
+        # --- 真实模型推理代码 ---
+        # inputs = tokenizer_roberta(sentence, return_tensors="pt", truncation=True, max_length=512)
+        # with torch.no_grad():
+        #     outputs = model_roberta(**inputs)
+        #     probs = torch.sigmoid(outputs.logits).squeeze().tolist()
+        # return {INDICATOR_KEYS[i]: probs[i] for i in range(12)}
+        pass # 替换掉 pass，取消上面注释即可运行
+
+    # --- 模拟代码 ---
     probs = {}
     for key in INDICATOR_KEYS:
-        # 模拟 5% 的概率触发某个违规
         probs[key] = random.uniform(0.6, 0.9) if random.random() < 0.05 else random.uniform(0.0, 0.4)
     return probs
 
@@ -197,31 +217,29 @@ async def analyze_policy(request: AnalyzeRequest):
 @app.post("/api/v1/rectify", response_model=RectifyResponse, summary="智能整改接口")
 async def rectify_snippet(request: RectifyRequest):
     """
-    2. 智能整改生成 (RAG)：针对违规片段，调用 Milvus 检索并使用 mT5-base 生成定向改写。
+    2. 智能整改生成 (RAG)：针对违规片段，调用向量数据库检索并使用 mT5-base 生成定向改写。
     """
     
-    # a. 检索 (Retrieve) - 模拟
-    """
-    真实场景下：
-    query_vector = model_sbert.encode([request.original_snippet])[0]
-    search_params = {"metric_type": "L2", "params": {"nprobe": 10}}
-    results = collection_milvus.search([query_vector], "embedding", search_params, limit=3, output_fields=["case_text"])
-    retrieved_cases = [hit.entity.get('case_text') for hit in results[0]]
-    """
-    retrieved_cases_mock = f"参考规范案例：在收集{request.violation_type}时，应明确告知用户处理目的、方式和范围。"
+    if USE_REAL_MODEL:
+        # --- 真实 RAG 检索与生成代码 ---
+        # a. 检索 (Retrieve)
+        # query_vector = model_sbert.encode([request.original_snippet])
+        # D, I = index_faiss.search(query_vector, k=3) # 检索最相似的 3 个案例
+        # retrieved_cases = [legal_texts[str(idx)] for idx in I[0]]
+        # retrieved_context = " ".join(retrieved_cases)
+        
+        # b. 生成 (Generate)
+        # prompt = f"请根据以下合规规范，修改违规条款：\n规范：{retrieved_context}\n原条款：{request.original_snippet}\n修改后："
+        # inputs = tokenizer_mt5(prompt, return_tensors="pt", truncation=True, max_length=512)
+        # with torch.no_grad():
+        #     outputs = model_mt5.generate(**inputs, max_length=128)
+        # suggested_text = tokenizer_mt5.decode(outputs[0], skip_special_tokens=True)
+        # legal_basis = INDICATORS.get(request.violation_type, {}).get("legal_basis", "《个人信息保护法》相关规定")
+        # return RectifyResponse(suggested_text=suggested_text, legal_basis=legal_basis)
+        pass # 替换掉 pass，取消上面注释即可运行
 
-    # b. 生成 (Generate) - 模拟
-    """
-    真实场景下：
-    prompt = f"请根据以下合规案例，修改违规条款：\n案例：{retrieved_cases}\n原条款：{request.original_snippet}\n修改后："
-    inputs = tokenizer_mt5(prompt, return_tensors="pt")
-    outputs = model_mt5.generate(**inputs, max_length=128)
-    suggested_text = tokenizer_mt5.decode(outputs[0], skip_special_tokens=True)
-    """
-    
-    # 构造通用的假数据返回
+    # --- 模拟代码 ---
     suggested_text = f"【系统建议】为了符合合规要求，建议将原表述修改为：在您使用本服务时，我们将出于提供核心业务功能的目的，在获得您单独同意后，收集必要的个人信息。"
-    
     legal_basis = INDICATORS.get(request.violation_type, {}).get("legal_basis", "《个人信息保护法》相关规定")
 
     return RectifyResponse(
