@@ -4,9 +4,10 @@ import { PRIVACY_POLICY_TEXT } from '../constants';
 import PolicyModal from './PolicyModal';
 import { api } from '../utils/api';
 import { motion } from 'motion/react';
+import { User } from '../types';
 
 interface RegisterProps {
-  onRegister: (token: string, user: any) => void;
+  onRegister: (token: string, user: User) => void;
   onSwitchToLogin: () => void;
   onShowToast?: (message: string, type?: 'success' | 'error') => void;
 }
@@ -47,7 +48,7 @@ export default function Register({ onRegister, onSwitchToLogin, onShowToast }: R
       onShowToast?.('注册成功，已自动登录', 'success');
       onRegister(loginData.token, loginData.user);
     } catch (error: any) {
-      onShowToast?.(error.message || '注册失败', 'error');
+      onShowToast?.(error.message || '注册失败，请检查网络连接后重试', 'error');
     } finally {
       setIsLoading(false);
     }

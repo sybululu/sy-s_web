@@ -4,7 +4,7 @@
  */
 
 import { useState, useEffect } from 'react';
-import { ViewType, Project, Clause, ToastState } from './types';
+import { ViewType, Project, Clause, ToastState, User } from './types';
 import Sidebar from './components/Sidebar';
 import Header from './components/Header';
 import Overview from './components/Overview';
@@ -30,7 +30,7 @@ export default function App() {
   const [searchQuery, setSearchQuery] = useState('');
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [analysisStep, setAnalysisStep] = useState('');
-  const [currentUser, setCurrentUser] = useState<any>(null);
+  const [currentUser, setCurrentUser] = useState<User | null>(null);
 
   useEffect(() => {
     // 检查本地是否已有 token
@@ -76,8 +76,9 @@ export default function App() {
         .catch(err => {
           console.error('Failed to fetch projects:', err);
           setProjects([]);
-          if (err.message !== '登录已过期') {
-            showToast('无法连接到后端服务，请检查 API 地址配置', 'error');
+          // 排除 401 错误（已在 apiFetch 中处理）
+          if (err.code !== 'UNAUTHORIZED') {
+            showToast(err.message || '无法连接到后端服务，请检查 API 地址配置', 'error');
           }
         });
     }
@@ -90,7 +91,7 @@ export default function App() {
     }, 3000);
   };
 
-  const handleLogin = (token: string, user: any) => {
+  const handleLogin = (token: string, user: User) => {
     setCurrentUser(user);
     setIsLoggedIn(true);
     setCurrentView('overview');

@@ -4,9 +4,10 @@ import { PRIVACY_POLICY_TEXT } from '../constants';
 import PolicyModal from './PolicyModal';
 import { api } from '../utils/api';
 import { motion } from 'motion/react';
+import { User } from '../types';
 
 interface LoginProps {
-  onLogin: (token: string, user: any) => void;
+  onLogin: (token: string, user: User) => void;
   onSwitchToRegister: () => void;
   onShowToast?: (message: string, type?: 'success' | 'error') => void;
 }
@@ -42,7 +43,8 @@ export default function Login({ onLogin, onSwitchToRegister, onShowToast }: Logi
       onLogin(data.token, data.user);
       onShowToast?.('登录成功', 'success');
     } catch (error: any) {
-      onShowToast?.(error.message || '登录失败', 'error');
+      // ApiError 和普通 Error 都有 message 属性
+      onShowToast?.(error.message || '登录失败，请检查网络连接后重试', 'error');
     } finally {
       setIsLoading(false);
     }

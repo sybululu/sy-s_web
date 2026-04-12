@@ -47,9 +47,9 @@ export default function Drawer({ clause, isOpen, onClose, onAdopt, onShowToast }
       currentClause.suggestedText = res.suggested_text;
       currentClause.legalBasis = res.legal_basis;
       currentClause.diffSuggestedHtml = `<span class="diff-add">${res.suggested_text}</span>`;
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to generate suggestion:', error);
-      onShowToast?.('生成整改建议失败', 'error');
+      onShowToast?.(error.message || '生成整改建议失败，请检查网络连接后重试', 'error');
     } finally {
       setIsGenerating(false);
     }

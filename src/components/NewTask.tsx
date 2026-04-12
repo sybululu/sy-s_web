@@ -6,8 +6,53 @@ interface NewTaskProps {
   onStartAnalysis: (type: string, value: string) => void;
 }
 
+// 文件大小限制：20MB
+const MAX_FILE_SIZE = 20 * 1024 * 1024;
+
+// 允许的文件类型
+const ALLOWED_EXTENSIONS = ['.txt', '.md', '.json', '.csv'];
+
+// 验证文件
+function validateFile(file: File): { valid: boolean; error?: string } {
+  const extension = '.' + file.name.split('.').pop()?.toLowerCase();
+  
+  if (!ALLOWED_EXTENSIONS.includes(extension)) {
+    return { 
+      valid: false, 
+      error: `不支持的文件类型。支持的格式：${ALLOWED_EXTENSIONS.join(', ')}` 
+    };
+  }
+  
+  if (file.size > MAX_FILE_SIZE) {
+    return { 
+      valid: false, 
+      error: `文件大小超过限制（最大 20MB）` 
+    };
+  }
+  
+  return { valid: true };
+}
+
 export default function NewTask({ onStartAnalysis }: NewTaskProps) {
   const [textInput, setTextInput] = useState('');
+  const [fileError, setFileError] = useState<string | null>(null);
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFileError(null);
+    const file = e.target.files?.[0];
+    
+    if (!file) return;
+    
+    const validation = validateFile(file);
+    if (!validation.valid) {
+      setFileError(validation.error || '文件验证失败');
+      // 清空 input
+      e.target.value = '';
+      return;
+    }
+    
+    onStartAnalysis('file', file);
+  };
 
   return (
     <motion.div 
@@ -32,12 +77,7 @@ export default function NewTask({ onStartAnalysis }: NewTaskProps) {
           <input 
             type="file" 
             className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-20"
-            onChange={(e) => {
-              const file = e.target.files?.[0];
-              if (file) {
-                onStartAnalysis('file', file as any);
-              }
-            }}
+            onChange={handleFileChange}
             accept=".txt,.md,.json,.csv"
           />
           <div className="absolute inset-0 bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:16px_16px] opacity-30"></div>
@@ -54,6 +94,9 @@ export default function NewTask({ onStartAnalysis }: NewTaskProps) {
             <button className="bg-white/80 border border-white/60 px-6 py-2.5 rounded-lg text-sm font-medium text-ink transition-colors hover:bg-white shadow-sm flex items-center gap-2 pointer-events-auto">
               浏览本地文件 <ArrowRight className="w-4 h-4 text-ink-muted" />
             </button>
+            {fileError && (
+              <p className="text-red-500 text-sm mt-2 max-w-md text-center">{fileError}</p>
+            )}
           </div>
         </motion.div>
 

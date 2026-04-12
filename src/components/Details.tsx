@@ -49,6 +49,10 @@ export default function Details({ currentProject, onOpenDrawer, onDownload }: De
 
   const totalPages = Math.ceil(currentProject.clauses.length / ITEMS_PER_PAGE) || 1;
   const currentData = currentProject.clauses.slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE);
+  
+  // 计算分页显示范围
+  const startItem = currentProject.clauses.length === 0 ? 0 : (currentPage - 1) * ITEMS_PER_PAGE + 1;
+  const endItem = Math.min(currentPage * ITEMS_PER_PAGE, currentProject.clauses.length);
 
   return (
     <motion.div 
@@ -147,7 +151,7 @@ export default function Details({ currentProject, onOpenDrawer, onDownload }: De
         {/* Pagination Controls */}
         <div className="px-6 py-4 border-t border-white/30 flex items-center justify-between bg-white/40 mt-auto shrink-0">
           <div className="text-sm text-ink-muted">
-            显示第 <span className="font-medium text-ink">{currentProject.clauses.length === 0 ? 0 : (currentPage - 1) * ITEMS_PER_PAGE + 1}</span> 到 <span className="font-medium text-ink">{Math.min(currentPage * ITEMS_PER_PAGE, currentProject.clauses.length)}</span> 条，共 <span className="font-medium text-ink">{currentProject.clauses.length}</span> 条
+            显示第 <span className="font-medium text-ink">{startItem}</span> 到 <span className="font-medium text-ink">{endItem}</span> 条，共 <span className="font-medium text-ink">{currentProject.clauses.length}</span> 条
           </div>
           <div className="flex items-center gap-2">
             <button 
